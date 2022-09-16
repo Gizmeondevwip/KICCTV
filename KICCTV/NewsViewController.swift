@@ -290,7 +290,8 @@ class NewsViewController: UIViewController {
                       self.newsImageView.sd_setImage(with: URL(string: (( newsImage).addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!)),placeholderImage:UIImage(named: "landscape_placeholder"))
                   }
                   else {
-                      self.newsImageView.image = UIImage(named: "landscape_placeholder")
+                      self.newsImageView
+                          .image = UIImage(named: "landscape_placeholder")
                       self.newsImageViewHeight.constant = 0
                   }
                   WarningDisplayViewController().noResultView.isHidden = true

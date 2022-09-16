@@ -152,6 +152,9 @@ enum Theme: Int {
   var navigationControllerLogo: String {
     return "ApplLogo"
   }
+    var searchIcon: String{
+        return "TVExcelSearchImage-1"
+    }
   var backImage: String {
     return "TVExcelBack"
   }

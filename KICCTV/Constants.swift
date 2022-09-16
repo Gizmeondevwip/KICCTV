@@ -169,7 +169,8 @@ let GetPartnerByCategory1 = commonBkAPI + "api/partnerVideosByShows?"
 
 //let GetDianamicHome = "https://staging.poppo.tv/test/api/show/list?offset="
 let GetDianamicHome = commonBkAPI + "show/list?offset="
-let GetDianamicHomeWithoutOffset = commonBkAPI + "show/list?"
+//let GetDianamicHomeWithoutOffset = commonBkAPI + "show/list?"
+let GetDianamicHomeWithoutOffset = commonBkAPI + "show/home?"
 
 let GetNewsDetails = commonBkAPI + "show/id?"
 let GetLinearEvents = commonBkAPI + "linearEvent/id?"

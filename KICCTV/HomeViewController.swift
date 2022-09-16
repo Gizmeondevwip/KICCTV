@@ -28,12 +28,25 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
             self.pausePlayButton.isHidden = true
         }
     }
+    @IBOutlet weak var airPlayButton: UIButton!
+//    {
+//        didSet{
+//            self.airPlayButton.isHidden = true
+//        }
+//    }
     @IBOutlet weak var liveLabel: UILabel!{
         didSet{
             self.liveLabel.isHidden = true
             self.liveLabel.textColor = ThemeManager.currentTheme().TabbarColor
         }
     }
+    
+    @IBOutlet weak var placeHolderImageView: UIImageView!{
+        didSet{
+            self.placeHolderImageView.isHidden = true
+        }
+    }
+    
     @IBOutlet weak var fullScreenButton: UIButton!{
         didSet{
             self.fullScreenButton.isHidden = true
@@ -46,6 +59,7 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
     }
     
     @IBOutlet weak var videoViewHeight: NSLayoutConstraint!
+    
     var popularVideos = [VideoModel]()
     var filmVideos = [VideoModel]()
     var liveVideos = [VideoModel]()
@@ -76,7 +90,7 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
     var isLandscape = false
     var isPresentController = true
     var ismuted = false
-
+    var airPlay = UIView()
    
 
   override func viewDidLoad() {
@@ -261,6 +275,9 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
       }
     }
     
+    @IBAction func airPlayButtonAction(_ sender: Any) {
+        self.showAirPlayAction()
+    }
     @IBAction func fullScreenAction(_ sender: UIButton) {
         var value = UIInterfaceOrientation.portrait.rawValue
            if(sender.isSelected) {
@@ -269,6 +286,7 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
                self.navigationController?.navigationBar.isHidden = true
             self.pausePlayButton.isHidden = true
                     self.fullScreenButton.isHidden = true
+               self.placeHolderImageView.isHidden = true
              self.muteButton.isHidden = true
             self.fullScreenButton.setImage(UIImage(named: "fullNormalButttton"), for: .normal)
 
@@ -290,6 +308,7 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
             self.pausePlayButton.isHidden = true
             self.fullScreenButton.isHidden = true
             self.muteButton.isHidden = true
+               
            self.fullScreenButton.setImage(UIImage(named: "icon_minimize"), for: .normal)
             if let delegate = UIApplication.shared.delegate as? AppDelegate {
                        delegate.restrictRotation = .landscapeRight
@@ -324,13 +343,24 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
     func initialView() {
     let newBackButton = UIBarButtonItem(image: UIImage(named: "TVExcelsideMenuBar")!.withRenderingMode(.alwaysTemplate), style: UIBarButtonItem.Style.plain, target: self, action: #selector(showSideMenu(sender:)))
     newBackButton.tintColor = ThemeManager.currentTheme().UIImageColor
-    self.navigationItem.rightBarButtonItem = newBackButton
-
+    let searchButton = UIBarButtonItem(image: UIImage(named: "TVExcelSearchImage-1")!.withRenderingMode(.alwaysTemplate), style: UIBarButtonItem.Style.plain, target: self, action: #selector(MoveToSearchPage(sender:)))
+    
+        searchButton.tintColor = ThemeManager.currentTheme().UIImageColor
+        self.navigationItem.rightBarButtonItems = [newBackButton,searchButton]
+        
+//        let appIconButton = UIBarButtonItem(image: UIImage(named: ThemeManager.currentTheme().navigationControllerLogo)!.withRenderingMode(.alwaysTemplate), style: UIBarButtonItem.Style.plain, target: self, action: #selector(showSideMenu(sender:)))
+        
+//        self.navigationItem.leftBarButtonItem = appIconButton
+        
+//    let searchIconView = UIImageView(frame: CGRect(x: 0, y: 0, width: 38, height: 38))
+//    searchIconView.contentMode = .scaleAspectFit
+//        searchIconView.image = AppHelper.imageScaledToSize(image: UIImage(named: ThemeManager.currentTheme().searchIcon)!, newSize: CGSize(width: 60, height: 50))
     let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 38, height: 38))
         imageView.contentMode = .scaleAspectFit
         //let image = UIImage(named: ThemeManager.currentTheme().navigationControllerLogo)
     imageView.image = AppHelper.imageScaledToSize(image: UIImage(named: ThemeManager.currentTheme().navigationControllerLogo)!, newSize: CGSize(width: 60, height: 50))
-    navigationItem.titleView = imageView
+//    navigationItem.titleView = imageView
+//        navigationItem.leftBarButtonItem =
     navigationItem.rightBarButtonItem?.tintColor = ThemeManager.currentTheme().UIImageColor
     self.navigationController?.navigationBar.isHidden = false
         
@@ -360,7 +390,11 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
     }
     videoListingTableview.backgroundColor = ThemeManager.currentTheme().backgroundColor
   }
-
+    
+//func MoveToSearchPage() {
+//    let searchController = self.storyboard?.instantiateViewController(withIdentifier: "Search") as! HomeSearchViewController
+//    self.present(searchController, animated: true, completion: nil)
+//  }
   func handleNotificationFromInactive() {
     let userInfo = UserDefaults.standard.dictionary(forKey: "userInfo")
     guard let content_type = userInfo!["content_type"] as? String
@@ -474,12 +508,31 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
   @objc func showSideMenu(sender: UIBarButtonItem) {
     present(SideMenuManager.default.menuRightNavigationController!, animated: true, completion: nil)
   }
+  @objc func MoveToSearchPage(sender: UIBarButtonItem) {
+      let searchController = self.storyboard?.instantiateViewController(withIdentifier: "Search") as! HomeSearchViewController
+      self.present(searchController, animated: true, completion: nil)
+    }
+    
   // MARK: Network Delegate
   func gotoOnline() {
     if UserDefaults.standard.string(forKey:"user_id") != nil {
       self.videoListingTableview.isHidden = false
     }
   }
+    func showAirPlayAction(){
+        if #available(iOS 11.0, *) {
+            airPlay.frame = CGRect(x: 0,y: 0,width: 30,height: 30)
+            let buttonView = UIView(frame: CGRect(x: 0,y: 0,width: 30,height: 30))
+            buttonView.backgroundColor = .yellow
+            let routerPickerView = AVRoutePickerView(frame: buttonView.bounds)
+            routerPickerView.tintColor = UIColor.black
+            routerPickerView.activeTintColor = .green
+            buttonView.addSubview(routerPickerView)
+            self.airPlay.addSubview(buttonView)
+        } else {
+            // Fallback on earlier versions
+        }
+    }
     func didSelectActivation() {
         if UserDefaults.standard.string(forKey:"skiplogin_status") == "true" {
                 DispatchQueue.main.async {
@@ -1273,14 +1326,16 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
     var videoHeight = CGFloat()
 
     func setUpContentPlayer(liveLink:String?,type:String?) {
-
        self.activityIndicatorView.isHidden = false
+        placeHolderImageView.isHidden = false
        self.activityIndicatorView.startAnimating()
         self.isPresentController = true
 
        channelStartTime = getCurrentDate()
 //        liveLink!
-        let contentUrl = URL(string: String(format: "https://liveplayer.poppo.tv/restreamhlsv2/hls/dvrstream.m3u8"))
+// "https://liveplayer.poppo.tv/restreamhlsv2/hls/dvrstream.m3u8"
+        
+        let contentUrl = URL(string: String(format: liveLink!))
            let asset: AVURLAsset = AVURLAsset(url: contentUrl! as URL)
            playerItem = AVPlayerItem(asset: asset)
            avPlayer?.replaceCurrentItem(with: playerItem)
@@ -1312,6 +1367,7 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
                  self?.activityIndicatorView.isHidden = false
                  self?.activityIndicatorView.startAnimating()
                } else {
+                   
                  if self!.watchUpdateFlag == false {
                    self?.watchUpdateFlag = true
                  }
@@ -1321,6 +1377,11 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
            }
          }
         contentPlayerLayer!.frame =  CGRect(x: 0, y: 0, width: videoView.frame.size.width , height: videoHeight )
+        
+//        let myImage = UIImage(named: "landscape_placeholder")
+//        let imageView = UIImageView(image: myImage!)
+//        imageView.frame = CGRect(x: 0, y: 0, width: videoView.frame.size.width , height: videoHeight )
+//        videoView.addSubview(imageView)
 
            videoView.layer.addSublayer(contentPlayerLayer!)
            videoView.bringSubviewToFront(fullScreenButton)
@@ -1328,6 +1389,12 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
       
            videoView.bringSubviewToFront(liveLabel)
            videoView.bringSubviewToFront(muteButton)
+//        let myLayer = CALayer()
+//        let myImage = UIImage(named: "landscape_placeholder")?.cgImage
+//        myLayer.contents = myImage
+//        videoView.layer.addSublayer(myLayer)
+//            .image = UIImage(named: "landscape_placeholder")
+
         pausePlayButton.addTarget(self, action: #selector(playPauseAction), for: .touchUpInside)
         pausePlayButton.titleLabel?.text = ""
         pausePlayButton.imageView?.image = UIImage.init(named: "play")
@@ -1357,8 +1424,10 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
        if !(Application.shared.CastSessionStart) {
          if isPlaying {
            avPlayer?.pause()
+             placeHolderImageView.isHidden = false
            pausePlayButton.setImage(UIImage(named: "play"), for: .normal)
          } else {
+             placeHolderImageView.isHidden = true
            avPlayer?.play()
            pausePlayButton.setImage(UIImage(named: "pause"), for: .normal)
          }
@@ -1371,6 +1440,7 @@ class HomeViewController: UIViewController, CLLocationManagerDelegate, InternetC
             self.fullScreenButton.isHidden = false
             self.pausePlayButton.isHidden = false
             self.muteButton.isHidden = false
+            self.airPlayButton.isHidden = false
             self.liveLabel.isHidden = false
            self.hidevideoController = false
           //self.playPauseButton.isHidden = false
